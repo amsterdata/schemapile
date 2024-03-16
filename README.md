@@ -1,7 +1,6 @@
 # SchemaPile: A Large Collection of Relational Database Schemas
 
 This repository contains code and data for the SchamaPile paper.
-Large files are provided via [Git LFS](https://git-lfs.com/).
 
 ## Data
 [SchemaPile SQL-Files and Licenses](sqlfiles-and-licenses.md)
