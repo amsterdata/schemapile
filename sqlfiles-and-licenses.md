@@ -16,4 +16,4 @@ in the following JSON format:
 }
 ```
 
-Link to file: [data/urls_and_licenses.json.gz](https://drive.google.com/file/d/1oGvEvRzbuS3lzV7nOTDLMRsIkfVdChIe/view?usp=sharing)
+Link to file: [data/urls_and_licenses.json.gz](https://zenodo.org/records/10931803/files/urls_and_licenses.json.gz?download=1)
