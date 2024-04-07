@@ -33,7 +33,7 @@ Hyperparameters:
 
 We also provide a model based on the [t5-base](https://huggingface.co/t5-base) model, which was trained on the SchemaPile dataset.
 
-[t5-base-schemapile.zip](https://figshare.com/s/5b7d455d682a811db829)
+[t5-base-schemapile.zip](https://huggingface.co/tdoehmen/t5-schemapile-fk)
 
 ## Valentine Benchmark
 
