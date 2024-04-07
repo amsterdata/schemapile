@@ -20,5 +20,4 @@ permissively licensed:
 
 [data/schemapile-perm-files.tar.gz](https://zenodo.org/records/10931803/files/schemapile-perm-sqlfiles.tar.gz?download=1)
 
-Note: License information per file can be found [here](sqlfiles-and-licenses.md).
-The list of permissive licenses was adopted from [BigCode Project/The Stack](https://huggingface.co/datasets/bigcode/the-stack#licensing-information) and can be found [here](https://github.com/amsterdata/schemapile/blob/main/data/permissive_licenses.json)
+Note: The list of permissive licenses was adopted from [BigCode Project/The Stack](https://huggingface.co/datasets/bigcode/the-stack#licensing-information) and can be found [here](https://github.com/amsterdata/schemapile/blob/main/data/permissive_licenses.json).
