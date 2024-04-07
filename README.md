@@ -13,8 +13,6 @@ This repository contains code and data for the SchamaPile paper.
 ## Experiments
 [Overview](experiments.md)
 
-[Foreign Key Detection Model](fk-detection-model.md)
-
 ## Contact
 
 Please consider reporting cases of personal or otherwise undesired tables in SchemaPile to the email below. Feedback, suggestions and results from projects with SchemaPile are also very welcome!
