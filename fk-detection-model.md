@@ -2,7 +2,7 @@
 
 ## starcoder-schemapile
 The foreign key detection model is based on the 
-[bigcode/starcoder (huggingface)](https://huggingface.co/bigcode/starcoder) model.
+[bigcode/starcoder](https://huggingface.co/bigcode/starcoder) model.
 
 We provide the finetuned model in huggingface transformers format below: 
 
