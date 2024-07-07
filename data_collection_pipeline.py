@@ -16,11 +16,12 @@ import tqdm
 from multiprocessing import Pool
 from sqloxide import restore_ast
 
-sqlfiles_path = "data/sqlfiles/"
-quarantine = "data/sqlfiles_duplicates/"
-sqlasts_path = "data/sqlasts/"
+permissive = False
+sqlfiles_path = f"data/sqlfiles{'_perm' if permissive else ''}/"
+quarantine = f"data/sqlfiles_duplicates{'_perm' if permissive else ''}/"
+sqlasts_path = f"data/sqlasts{'_perm' if permissive else ''}/"
 urls_path = "data/urls_and_licenses.json.gz"
-schemapile_path = "data/schemapile.json"
+schemapile_path = f"data/schemapile{'_perm' if permissive else ''}.json"
 
 user_agents = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
@@ -150,7 +151,7 @@ if __name__ ==  '__main__':
                 print(f"{downloaded+existing}/{len(urls_and_licenses)} downloaded (estimated remaining time {remaining_time})", end="\r")
 
     os.makedirs(sqlfiles_path, exist_ok=True)
-    download_files(urls_and_licenses)
+    #download_files(urls_and_licenses)
     print("downloaded all files                                                     ")
 
     # deduplicate Files
@@ -347,6 +348,7 @@ if __name__ ==  '__main__':
                     foreign_key = None
                     default = None
                     checks = []
+                    comment = None
                     for option_statement in options_statement:
                         if isinstance(option_statement["option"], str) and option_statement["option"] == "NotNull":
                             nullable = False
@@ -369,12 +371,14 @@ if __name__ ==  '__main__':
                                 foreign_key_foreign_table = get_table_name(option_statement["option"]["ForeignKey"]["foreign_table"])
                                 foreign_key_referred_column = option_statement["option"]["ForeignKey"]["referred_columns"][0]["value"]
                                 foreign_key = {"COLUMNS": [column_name], "FOREIGN_TABLE": foreign_key_foreign_table, "REFERRED_COLUMNS": [foreign_key_referred_column], "ON_DELETE": option_statement["option"]["ForeignKey"]["on_delete"], "ON_UPDATE": option_statement["option"]["ForeignKey"]["on_update"]}
+                        elif type(option_statement["option"]) is dict and "Comment" in option_statement["option"]:
+                            comment = option_statement["option"]["Comment"]
                     if primary_key:
                         primary_keys.append(column_name)
                     if foreign_key:
                         foreign_keys.append(foreign_key)
-                    columns[column_name] = {"TYPE": column_type, "NULLABLE": nullable, "UNIQUE": unique, "DEFAULT": default, "CHECKS": checks, "IS_PRIMARY": primary_key, "IS_INDEX": False}
-                table = {"COLUMNS": columns, "PRIMARY_KEYS": primary_keys, "FOREIGN_KEYS": foreign_keys, "CHECKS": [], "INDEXES": []}
+                    columns[column_name] = {"TYPE": column_type, "NULLABLE": nullable, "UNIQUE": unique, "DEFAULT": default, "CHECKS": checks, "IS_PRIMARY": primary_key, "IS_INDEX": False, "COMMENT": comment}
+                table = {"COLUMNS": columns, "PRIMARY_KEYS": primary_keys, "FOREIGN_KEYS": foreign_keys, "CHECKS": [], "INDEXES": [], "COMMENT": None}
                 tables[table_name] = table
 
                 constraints_statement = create_table_statement["constraints"]
@@ -382,6 +386,18 @@ if __name__ ==  '__main__':
                     for constraint_statement in constraints_statement:
                         extract_and_add_constraints(constraint_statement, tables[table_name])
 
+            if "Comment" in statement_statement:
+                comment = statement_statement['Comment']['comment']
+                if statement_statement['Comment']['object_type'] == 'Table':
+                    table_name = get_table_name(statement_statement['Comment']['object_name'])
+                    if table_name in tables:
+                        tables[table_name]["COMMENT"] = comment
+                if statement_statement['Comment']['object_type'] == 'Column':
+                    table_name = get_table_name(statement_statement['Comment']['object_name'][:-1])
+                    column_name = statement_statement['Comment']['object_name'][-1]["value"]
+                    if table_name in tables and column_name in tables[table_name]:
+                        tables[table_name][column_name]["COMMENT"] = comment
+                
         # remove empty tables
         for table_name in list(tables.keys()):
             if len(tables[table_name]["COLUMNS"]) == 0:
@@ -398,7 +414,7 @@ if __name__ ==  '__main__':
                     if "AddConstraint" in statement_statement["AlterTable"]["operation"]:
                         add_constraint_statement = statement_statement["AlterTable"]["operation"]["AddConstraint"]
                         extract_and_add_constraints(add_constraint_statement, tables[existing_table])
-
+        
         # filter and clean up foreign keys (keep only those that refer to existing columns/tables)
         for table_name in tables:
             foreign_keys_original = tables[table_name]["FOREIGN_KEYS"]
