@@ -151,7 +151,7 @@ if __name__ ==  '__main__':
                 print(f"{downloaded+existing}/{len(urls_and_licenses)} downloaded (estimated remaining time {remaining_time})", end="\r")
 
     os.makedirs(sqlfiles_path, exist_ok=True)
-    #download_files(urls_and_licenses)
+    download_files(urls_and_licenses)
     print("downloaded all files                                                     ")
 
     # deduplicate Files
